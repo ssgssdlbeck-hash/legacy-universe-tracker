@@ -1,0 +1,8 @@
+{
+  "name": "Legacy Universe Tracker",
+  "short_name": "Legacy Tracker",
+  "start_url": "legacy-universe-tracker.html",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617"
+}
