@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Legacy Universe Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background:#020617;
+      color:#e5e7eb;
+      font-family:system-ui, sans-serif;
+      padding:20px;
+    }
+    h1 { margin-bottom:5px; }
+    .subtitle { color:#94a3b8; margin-bottom:20px; }
+
+    input, select, textarea, button {
+      width:100%;
+      margin-bottom:8px;
+      padding:8px;
+      border-radius:6px;
+      border:1px solid #334155;
+      background:#0f172a;
+      color:white;
+      font-size:14px;
+    }
+    button {
+      background:#38bdf8;
+      color:#020617;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:8px;
+    }
+
+    .card {
+      border:1px solid #1e293b;
+      border-radius:10px;
+      padding:12px;
+      margin-top:12px;
+      background:#0f172a;
+    }
+
+    .tier {
+      font-size:12px;
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid #64748b;
+      display:inline-block;
+      margin-left:6px;
+    }
+    .Alpha { color:#facc15; border-color:#facc15; }
+    .Believer { color:#4ade80; border-color:#4ade80; }
+    .Conduit { color:#38bdf8; border-color:#38bdf8; }
+
+    .stats div {
+      font-size:12px;
+    }
+  </style>
+</head>
+
+<body>
+<h1>Legacy Universe Tracker</h1>
+<div class="subtitle">Justice 6 preloaded — safe to add your own characters.</div>
+
+<div class="grid">
+  <input id="name" placeholder="Name">
+  <input id="alias" placeholder="Alias">
+  <select id="tier">
+    <option value="">Tier</option>
+    <option>Alpha</option>
+    <option>Believer</option>
+    <option>Conduit</option>
+  </select>
+  <input id="species" placeholder="Species">
+  <input id="team" placeholder="Affiliation">
+  <input id="city" placeholder="City">
+</div>
+
+<textarea id="powers" placeholder="Powers"></textarea>
+<textarea id="notes" placeholder="Notes"></textarea>
+
+<button onclick="addChar()">Add Character</button>
+
+<div id="list"></div>
+
+<script>
+const STORAGE_KEY = "legacy_universe_tracker_clean";
+let chars = [];
+
+function preloadJustice6() {
+  return [
+    {
+      name:"Crimson Guardian",
+      alias:"Sarah Buttowski",
+      tier:"Alpha",
+      species:"Zenithian",
+      team:"Justice 6",
+      city:"Chicago",
+      powers:"Super strength, flight, durability, heat vision",
+      notes:"Symbol of hope and raw power.",
+      stats:{str:10, spd:8, dur:10}
+    },
+    {
+      name:"Queen",
+      alias:"",
+      tier:"Alpha",
+      species:"Human (Enhanced)",
+      team:"Justice 6",
+      city:"Atlanta",
+      powers:"Invulnerability, combat mastery, tactical genius",
+      notes:"Cold, efficient, unstoppable.",
+      stats:{str:9, spd:7, dur:9}
+    },
+    {
+      name:"Gamma Radiant",
+      alias:"",
+      tier:"Believer",
+      species:"Mutate",
+      team:"Justice 6",
+      city:"Philadelphia",
+      powers:"Radiation manipulation, energy projection",
+      notes:"Living reactor.",
+      stats:{str:6, spd:6, dur:7}
+    },
+    {
+      name:"Blazefury",
+      alias:"",
+      tier:"Believer",
+      species:"Elemental Conduit",
+      team:"Justice 6",
+      city:"Cairo",
+      powers:"Elemental control, terraforming",
+      notes:"Strongest when bonded to a planet.",
+      stats:{str:8, spd:5, dur:8}
+    },
+    {
+      name:"Kazenwave",
+      alias:"",
+      tier:"Believer",
+      species:"Psionic",
+      team:"Justice 6",
+      city:"Life City",
+      powers:"Telepathy, telekinesis, precognition",
+      notes:"Psychic strategist.",
+      stats:{str:3, spd:6, dur:5}
+    },
+    {
+      name:"MachShift",
+      alias:"",
+      tier:"Conduit",
+      species:"Human",
+      team:"Justice 6",
+      city:"Mexico City",
+      powers:"Super speed, kinetic manipulation",
+      notes:"Velocity Veil conduit.",
+      stats:{str:5, spd:10, dur:6}
+    }
+  ];
+}
+
+function load() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    chars = JSON.parse(saved);
+  } else {
+    chars = preloadJustice6();
+    save();
+  }
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(chars));
+}
+
+function render() {
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  chars.forEach(c => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <strong>${c.name}</strong>
+      ${c.tier ? `<span class="tier ${c.tier}">${c.tier}</span>` : ""}
+      <div><b>Species:</b> ${c.species}</div>
+      <div><b>Team:</b> ${c.team}</div>
+      <div><b>City:</b> ${c.city}</div>
+      <div><b>Powers:</b> ${c.powers}</div>
+      <div class="stats">
+        <div>STR ${c.stats.str} | SPD ${c.stats.spd} | DUR ${c.stats.dur}</div>
+      </div>
+      <div>${c.notes}</div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function addChar() {
+  const c = {
+    name:name.value,
+    alias:alias.value,
+    tier:tier.value,
+    species:species.value,
+    team:team.value,
+    city:city.value,
+    powers:powers.value,
+    notes:notes.value,
+    stats:{str:5, spd:5, dur:5}
+  };
+  chars.unshift(c);
+  save();
+  render();
+}
+
+load();
+render();
+</script>
+</body>
+</html>
